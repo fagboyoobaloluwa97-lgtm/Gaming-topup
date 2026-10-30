@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Fire Top Up Center</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10121b;color:#fff;font-family:Arial,sans-serif}
+header{background:linear-gradient(135deg,#ff6a00,#ffbd35);color:#171717;text-align:center;padding:25px 12px}
+main{max-width:700px;width:92%;margin:20px auto}
+.panel{background:#1c2030;border:1px solid #383e52;border-radius:13px;padding:17px;margin-bottom:17px}
+h2{color:#ffbd35;font-size:20px}
+label{display:block;margin:13px 0 7px}
+input,select{width:100%;padding:13px;border-radius:8px;background:#10121b;color:white;border:1px solid #50566b;font-size:16px}
+.packages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.package{background:#292f42;color:white;border:2px solid #424a63;border-radius:10px;padding:14px 6px;cursor:pointer}
+.package strong,.package span{display:block;margin:5px 0}
+.package.selected{border-color:#ffbd35;background:#45371e}
+.action{width:100%;padding:14px;border:0;border-radius:9px;font-size:16px;font-weight:bold;margin-top:12px;cursor:pointer}
+.order{background:#ffbd35;color:#171717}
+.whatsapp{background:#25d366;color:#082c15}
+.note{font-size:13px;color:#c5cad8;line-height:1.6}
+.status{line-height:1.7;overflow-wrap:anywhere}
+footer{text-align:center;padding:20px;color:#c5cad8}
+</style>
+</head>
+<body>
+<header>
+<h1>🔥 Free Fire Top Up Center</h1>
+<p>Diamonds for Nigeria 🇳🇬 and Ghana 🇬🇭</p>
+</header>
+
+<main>
+<section class="panel">
+<h2>1. Select Your Country</h2>
+<label for="country">Country</label>
+<select id="country">
+<option value="NG">🇳🇬 Nigeria</option>
+<option value="GH">🇬🇭 Ghana</option>
+</select>
+<p id="countryInfo" class="status"></p>
+</section>
+
+<section class="panel">
+<h2>2. Choose Diamonds</h2>
+<p class="note">Choose a package. Ghana prices are examples and must be confirmed before launch.</p>
+<div class="packages">
+<button type="button" class="package" data-diamonds="100" data-ngn="1000" data-ghs="10">
+<strong>💎 100 Diamonds</strong><span></span><span></span>
+</button>
+<button type="button" class="package" data-diamonds="310" data-ngn="2500" data-ghs="25">
+<strong>💎 310 Diamonds</strong><span></span><span></span>
+</button>
+<button type="button" class="package" data-diamonds="520" data-ngn="4000" data-ghs="40">
+<strong>💎 520 Diamonds</strong><span></span><span></span>
+</button>
+<button type="button" class="package" data-diamonds="1060" data-ngn="8000" data-ghs="80">
+<strong>💎 1,060 Diamonds</strong><span></span><span></span>
+</button>
+</div>
+<p id="selection" class="status">Select a diamond package.</p>
+</section>
+
+<section class="panel">
+<h2>3. Player Details</h2>
+<label for="playerID">Free Fire Player ID</label>
+<input id="playerID" inputmode="numeric" placeholder="Enter Player ID">
+<label for="playerName">Player Name (optional)</label>
+<input id="playerName" placeholder="Enter player name">
+</section>
+
+<section class="panel">
+<h2>4. Payment Details</h2>
+<div id="paymentDetails" class="status"></div>
+<p class="note">Confirm the recipient and amount before paying. Never share your PIN or OTP.</p>
+</section>
+
+<section class="panel">
+<h2>5. Place Your Order</h2>
+<button type="button" id="prepare" class="action order">Prepare My Order</button>
+<button type="button" id="send" class="action whatsapp">Send Order to WhatsApp</button>
+<p id="message" class="status" aria-live="polite"></p>
+</section>
+</main>
+
+<footer>Free Fire Top Up Center · Nigeria 🇳🇬 | Ghana 🇬🇭</footer>
+
+<script>
+// YOUR CONTACT DETAILS
+const WHATSAPP_NUMBER = "2349072470758";
+const OPAY_ACCOUNT_NUMBER = "9072470758";
+const OPAY_ACCOUNT_NAME = "ENTER YOUR OPay ACCOUNT NAME";
+
+// Add the correct Ghana MTN MoMo details before launch
+const GHANA_MOMO_NUMBER = "ENTER YOUR MOMO NUMBER";
+const GHANA_MOMO_NAME = "ENTER YOUR MOMO ACCOUNT NAME";
+
+// Ghana prices below are examples. Replace with your real prices.
+
+const country = document.getElementById("country");
+const packageButtons = document.querySelectorAll(".package");
+const selection = document.getElementById("selection");
+const paymentDetails = document.getElementById("paymentDetails");
+const countryInfo = document.getElementById("countryInfo");
+const message = document.getElementById("message");
+let chosen = null;
+
+function money(amount, currency) {
+  return new Intl.NumberFormat("en", {
+    style: "currency",
+    currency: currency,
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+function price(button) {
+  return country.value === "GH"
+    ? Number(button.dataset.ghs)
+    : Number(button.dataset.ngn);
+}
+
+function currency() {
+  return country.value === "GH" ? "GHS" : "NGN";
+}
+
+function bothPrices(button) {
+  return "Nigeria: " + money(Number(button.dataset.ngn), "NGN") +
+    " | Ghana: " + money(Number(button.dataset.ghs), "GHS");
+}
+
+function updateCountry() {
+  packageButtons.forEach(function(button) {
+    const spans = button.querySelectorAll("span");
+    spans[0].textContent =
+      "🇳🇬 " + money(Number(button.dataset.ngn), "NGN");
+    spans[1].textContent =
+      "🇬🇭 " + money(Number(button.dataset.ghs), "GHS") + " (example)";
+  });
+
+  if (country.value === "GH") {
+    countryInfo.textContent = "Country selected: Ghana 🇬🇭";
+    paymentDetails.textContent =
+      "Payment method: MTN Mobile Money (MoMo). Recipient: " +
+      GHANA_MOMO_NAME + ". Number: " + GHANA_MOMO_NUMBER +
+      ". Confirm these details with the seller before paying.";
+  } else {
+    countryInfo.textContent = "Country selected: Nigeria 🇳🇬";
+    paymentDetails.textContent =
+      "Payment method: OPay transfer. Account number: " +
+      OPAY_ACCOUNT_NUMBER + ". Account name: " + OPAY_ACCOUNT_NAME +
+      ". Confirm the account name before paying.";
+  }
+
+  updateSelection();
+}
+
+function updateSelection() {
+  if (!chosen) {
+    selection.textContent = "Select a diamond package.";
+    return;
+  }
+
+  selection.textContent =
+    "Selected: " + chosen.dataset.diamonds + " diamonds · " +
+    money(price(chosen), currency()) + " · " + bothPrices(chosen);
+}
+
+packageButtons.forEach(function(button) {
+  button.addEventListener("click", function() {
+    chosen = button;
+    packageButtons.forEach(function(item) {
+      item.classList.remove("selected");
+    });
+    button.classList.add("selected");
+    updateSelection();
+    message.textContent = "";
+  });
+});
+
+country.addEventListener("change", function() {
+  updateCountry();
+  message.textContent = "";
+});
+
+function makeOrder() {
+  if (!chosen) {
+    message.textContent = "Please select a diamond package.";
+    return null;
+  }
+
+  const id = document.getElementById("playerID").value.trim();
+  const name = document.getElementById("playerName").value.trim();
+
+  if (!/^\d+$/.test(id)) {
+    message.textContent = "Please enter your numeric Free Fire Player ID.";
+    return null;
+  }
+
+  const gh = country.value === "GH";
+
+  return "FREE FIRE TOP UP ORDER\n\n" +
+    "Country: " + (gh ? "Ghana" : "Nigeria") + "\n" +
+    "Player ID: " + id + "\n" +
+    "Player name: " + (name || "Not provided") + "\n" +
+    "Diamonds: " + chosen.dataset.diamonds + "\n" +
+    "Selected price: " + money(price(chosen), currency()) + "\n" +
+    bothPrices(chosen) + "\n" +
+    "Payment method: " + (gh ? "MTN Mobile Money" : "OPay transfer") +
+    "\n\nPlease confirm my order and payment details.";
+}
+
+document.getElementById("prepare").addEventListener("click", function() {
+  if (makeOrder()) {
+    message.textContent = "Order prepared. Tap Send Order to WhatsApp.";
+  }
+});
+
+document.getElementById("send").addEventListener("click", function() {
+  const order = makeOrder();
+  if (!order) return;
+
+  const url = "https://wa.me/" + WHATSAPP_NUMBER +
+    "?text=" + encodeURIComponent(order);
+
+  window.location.href = url;
+});
+
+updateCountry();
+</script>
+</body>
+</html>
